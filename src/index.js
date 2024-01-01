@@ -424,6 +424,7 @@ module.exports = class App{
     // 3. 問題のある文字列の処理
     // 4. sudachiで固有名詞などの読みを正常化、英単語の日本語化
 
+    console.time("テキスト全体処理幼女");
     // 0
     if(msg.attachments.size !== 0) content = `添付ファイル、${content}`;
 
@@ -449,6 +450,8 @@ module.exports = class App{
     // 4
     content = await this.fix_reading(content);
     this.logger.debug(`content(fix reading): ${content}`);
+
+    console.timeEnd("テキスト全体処理幼女");
 
     const q = { str: content, id: msg.member.id, volume_order: volume_order }
 
@@ -540,10 +543,13 @@ module.exports = class App{
     
     let text_tmp = text;
     
+    console.time("辞書幼女");
     this.dictionaries.forEach((value, key) => {
         text_tmp = text_tmp.replace(new RegExp(escape_regexp(key.toUpperCase()), "gi"), value);
     });
+    console.timeEnd("辞書幼女");
 
+    console.time("Kagome幼女");
     try{
       tokens = await this.kagome.tokenize(text_tmp);
     }catch(e){
@@ -573,6 +579,8 @@ module.exports = class App{
         }
       }
     }
+
+    console.timeEnd("Kagome幼女");
 
     return result.join("");
   }
